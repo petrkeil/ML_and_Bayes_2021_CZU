@@ -1,0 +1,286 @@
+Intro to maximum likelihood and Bayesian statistics 
+====================================
+
+Petr Keil 
+
+June 2021, FZP CZU
+
+
+Preface
+========================================================
+- I am not a statistician.
+- I will show the basics, you figure out the rest.
+- Do ask questions and interrupt!
+
+Preface
+========================================================
+
+It would be wonderful if, after the course, you would:
+- Not be intimidated by Bayesian and ML papers.
+- Get the foundations and some of useful connections between concepts to build on.
+- See statistics as a simple construction set (e.g. Lego), rather than 
+as a series of recipes.
+- Have a statistical [satori](https://en.wikipedia.org/wiki/Satori).
+
+
+Contents
+========================================================
+***DAY 1***
+- Likelihood, probability distributions
+- First Bayesian steps
+
+***DAY 2***
+- First Bayesian steps
+- Classical models (regression, ANOVA)
+
+***DAY 3***
+- Advanced models (e.g. modelling imperfect species detection)
+- Inference, uncertainty, model selection.
+
+
+========================================================
+
+![eu](introduction-figure/plato2.jpg)
+
+*Statistical models are stories about how the data came to be.*
+
+========================================================
+
+![eu](introduction-figure/plato2.jpg)
+
+*Parametric statistical modeling* means describing a caricature of the "machine" that plausibly could have produced the nubmers we observe.
+
+Kéry 2010
+
+Data
+========================================================
+```{r, echo=FALSE}
+  x <- sort(rnorm(20))
+  y <- 2 + 3*x + rnorm(20)
+  data.frame(x,y)
+  #plot(x,y)
+```
+
+Data
+========================================================
+```{r, echo=FALSE}
+  #x <- sort(rnorm(100))
+  #y <- 2 + 3*x + rnorm(100)
+  plot(x,y, pch=19)
+```
+
+Data, model, parameters
+========================================================
+```{r, echo=FALSE, fig.width=5, fig.height=5}
+  plot(x,y, pch=19)
+  mx <- predict(lm(y~x), interval="predict" ) 
+  lines(x, mx[,'fit'], col="red")
+  lines(x, mx[,'lwr'], lty=2, col="red")
+  lines(x, mx[,'upr'], lty=2, col="red")
+```
+
+$y_i = a + b x_i + \epsilon_i$
+
+$\epsilon_i \sim Normal(0, \sigma)$ 
+
+
+Data, model, parameters
+========================================================
+```{r, echo=FALSE, fig.width=5, fig.height=5}
+  plot(x,y, pch=19)
+  mx <- predict(lm(y~x), interval="predict" ) 
+  lines(x, mx[,'fit'], col="red")
+  lines(x, mx[,'lwr'], lty=2, col="red")
+  lines(x, mx[,'upr'], lty=2, col="red")
+```
+
+$y_i \sim Normal(\mu_i, \sigma)$
+
+$\mu_i = a + b x_i$ 
+
+
+Data, model, parameters
+========================================================
+```{r, echo=FALSE, fig.width=5, fig.height=5}
+  plot(x,y, pch=19)
+  mx <- predict(lm(y~x), interval="predict" ) 
+  lines(x, mx[,'fit'], col="red")
+  lines(x, mx[,'lwr'], lty=2, col="red")
+  lines(x, mx[,'upr'], lty=2, col="red")
+```
+
+$y_i \sim Normal(\mu_i, \sigma)$
+
+$\mu_i = a + b x_i$ 
+
+**Deterministic** vs **stochastic** part. Also, $y_i$ is a random variable.
+
+Data
+========================================================
+```{r, echo=FALSE}  
+  x <- rnorm(n=100, mean=10, sd=1)
+  hist(x, freq=FALSE, ylab="Density", main=NULL, ylim=c(0,0.5))
+  points(x, rep(0, times=100))
+```
+
+Data, model, parameters
+========================================================
+```{r, echo=FALSE, fig.width=5, fig.height=5}
+  x <- rnorm(n=100, mean=10, sd=1)
+  hist(x, freq=FALSE, ylab="Density", main=NULL, ylim=c(0,0.5))
+  points(x, rep(0, times=100))
+  x.axis <- seq(from=min(x), to=max(x), by=0.1)
+  lines(x.axis, dnorm(x.axis, mean=10, sd=1), col="red")
+```
+
+Can you separate the **deterministic** and the **stochastic** part?
+
+$x_i \sim Normal(\mu, \sigma)$
+
+Can you tell what is based on a parametric model?
+========================================================
+- Permutation tests
+- Normal distribution
+- Kruskall-Wallis test
+- Histogram
+- t-test
+- Neural networks, random forests
+- ANOVA
+- Survival analysis
+- Pearson correlation
+- PCA (principal components analysis)
+
+
+Elementary notation
+========================================================
+- $P(A)$ vs $p(A)$ ... Probability vs probability density
+- $P(A \cap B)$ ... Joint (intersection) probability (AND)
+- $P(A \cup B)$ ... Union probability (OR)
+- $P(A|B)$ ... Conditional probability (GIVEN THAT)
+- $\sim$ ... is distributed as
+- $x \sim N(\mu, \sigma)$ ... x is a normally distributed **random variable**
+- $\propto$ ... is proportional to (related by constant multiplication)
+
+Elementary notation
+========================================================
+- $P(A)$ vs $p(A)$
+- $P(A \cap B)$
+- $P(A \cup B)$
+- $P(A|B)$
+- $\sim$ 
+- $\propto$ 
+
+Data, model, parameters
+========================================================
+
+Let's use $y$ for data, and $\theta$ for parameters.
+
+$p(\theta | y, model)$ or $p(y | \theta, model)$ 
+
+The model is always given (assumed), and usually omitted:
+
+$p(y|\theta)$  ... "likelihood-based" or "frequentist" statistics 
+
+$p(\theta|y)$ ... Bayesian statistics
+
+Maximum Likelihood Estimation (MLE)
+========================================================
+
+- Used for most pre-packaged models (GLM, GLMM, GAM, ...)
+- Great for complex models
+- Relies on **optimization** (relatively fast)
+- Can have problems with local optima
+- Not great with uncertainty
+
+Why go Bayesian?
+========================================================
+- Numerically tractable for models of any **complexity**.
+- Unbiased for **small sample sizes**.
+- It works with **uncertainty**.
+- Extremely **simple inference**.
+- The option of using **prior information**.
+- It gives **perspective**.
+
+The pitfalls
+========================================================
+- Steep learning curve.
+- Tedious at many levels. 
+- You will have to learn some programming.
+- It can be computationally intensive, slow.
+- Problematic model selection.
+- Not an exploratory analysis or data mining tool.
+
+To be thrown away
+========================================================
+- Null hypotheses formulation and testing
+- P-values, significance at $\alpha=0.05$, ...
+- Degrees of freedom, test statistics
+- Post-hoc comparisons
+- Sample size corrections
+
+Remains
+========================================================
+- Regression, t-test, ANOVA, ANCOVA, MANOVA
+- Generalized Linear Models (GLM)
+- GAM, GLS, autoregressive models
+- Mixed-effects (multilevel, hierarchical) models
+
+Are hierarchical models always Bayesian?
+=======================================================
+- No
+
+Myths about Bayes
+========================================================
+- It is a 'subjective' statistics.
+- The main reason to go Bayesian is to use **the Priors**.
+- Bayesian statistics is heavy on equations.
+
+Elementary notation
+========================================================
+- $P(A)$ vs $p(A)$
+- $P(A \cap B)$
+- $P(A \cup B)$
+- $P(A|B)$
+- $\sim$ 
+- $\propto$ 
+
+Indexing in R and BUGS: 1 dimension
+========================================================
+```{r, tidy=FALSE}
+  x <- c(2.3, 4.7, 2.1, 1.8, 0.2)
+  x
+  x[3] 
+```
+
+Indexing in R and BUGS: 2 dimensions
+========================================================
+```{r, tidy=FALSE}
+  X <- matrix(c(2.3, 4.7, 2.1, 1.8), 
+              nrow=2, ncol=2)
+  X
+  X[2,1] 
+```
+
+Lists in R
+========================================================
+```{r, tidy=FALSE}
+  x <- c(2.3, 4.7, 2.1, 1.8, 0.2)
+  N <- 5
+  data <- list(x=x, N=N)
+  data
+  data$x # indexing by name
+```
+
+For loops in R (and BUGS)
+========================================================
+```{r, tidy=FALSE}
+for (i in 1:5)
+{
+  statement <- paste("Iteration", i)
+  print(statement)
+}
+```
+
+
+
+

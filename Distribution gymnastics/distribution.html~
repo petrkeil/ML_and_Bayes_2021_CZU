@@ -1,0 +1,286 @@
+<p>This post shows how to build a custom univariate distribution in R from scratch, so that you end up with the essential functions: a <strong>probability density function</strong>, <strong>cumulative distribution function</strong>, <strong>quantile function</strong> and <strong>random number generator</strong>. </p>
+
+<p>In the beginning all you need is an equation of the probability density function, from which everyting else can be derived sometimes analytically, and always numerically. The analytical solutions may require some math skills, or may be impossible to find, but the numerical solutions are always feasible, require no math literacy, and coding them in R is easy with the <code>uniroot()</code> and <code>integrate()</code> functions. </p>
+
+<p>Throughout the post I will use a simple <strong>exponential distribution</strong> as an example.</p>
+
+<h2>Probability density function (PDF)</h2>
+
+<p>You will need to know what probability density (or mass) function is, and what is the difference between probability density and probability. I found the best intro to be this <a href="https://www.khanacademy.org/math/probability/random-variables-topic/random_variables_prob_dist/v/probability-density-functions">Khan&#39;s video</a> (10 min). Here is a couple of additional points:</p>
+
+<ul>
+<li>Probability density is <strong>relative probability</strong>.</li>
+<li>Probability density function evelauated for a given data point is the point&#39;s <strong>likelihood</strong>.</li>
+<li>Probability density can be greater than one.</li>
+</ul>
+
+<p><strong>Example: Exponential PDF</strong></p>
+
+<p>The formula for the exponential probability density function (PDF) is:</p>
+
+<p>\[ p(x) = \lambda e ^ {-\lambda x}, \qquad x \in [0, \infty] \]</p>
+
+<p>In literature, small \( p \) usually denotes probability density, while capital \( P \) is used for probability.</p>
+
+<p>We can code it in R:</p>
+
+<pre><code class="r">  my.dexp &lt;- function(x, lambda) lambda*exp(-lambda*x)
+  my.dexp(x=0:5, lambda=2)
+</code></pre>
+
+<pre><code>## [1] 2.0000000 0.2706706 0.0366313 0.0049575 0.0006709 0.0000908
+</code></pre>
+
+<p>And compare it with R&#39;s native PDF (it uses <code>rate</code> instead of \( \lambda \)):</p>
+
+<pre><code class="r">  dexp(x=0:5, rate=2)
+</code></pre>
+
+<pre><code>## [1] 2.0000000 0.2706706 0.0366313 0.0049575 0.0006709 0.0000908
+</code></pre>
+
+<p>Here is a plot of my PDF using the R&#39;s built-in function <code>curve()</code>:</p>
+
+<pre><code class="r">  curve(my.dexp(x, lambda=2), from=0, to=2, main=&quot;Exponential PDF&quot;)
+</code></pre>
+
+<p><img src="" </p>
+
+<h2>Cumulative distribution function (CDF) - analytical solution</h2>
+
+<p>This function gives, for a given point \( x \), the area under the PDF curve all the way down to the left of the point \( x \). This area is the probability that an outcome \( X \) will have value lower or equal to \( x \):</p>
+
+<p>\[ P(X \le x) = \int_0^x \! f(\pi \rightarrow X) \, \mathrm{d}\pi \]</p>
+
+<p>I liked this <a href="http://www.youtube.com/watch?v=_adalwwvP90">stepbil&#39;s video</a> (9 min) that shows how to flip between PDF and CDF, and why do we need the \( \pi \) in the integral. I am really lame with calculus and what really works for me is <a href="http://www.sagemath.org/">Sage</a> &ndash; it is free, it finds analytical solutions of integrals, and it may be worth a shot before diving into numerical integration. </p>
+
+<p>For the exponential distribution the CDF is:</p>
+
+<p>\[ P(X \le x) = 1 - e ^ {- \lambda x}, \qquad x \in [0, \infty] \]</p>
+
+<p>In R it is:</p>
+
+<pre><code class="r">  my.pexp.anal &lt;- function(x, lambda) 1- exp(-lambda*x)
+  my.pexp.anal(x=0:5, lambda=2)
+</code></pre>
+
+<pre><code>## [1] 0.0000 0.8647 0.9817 0.9975 0.9997 1.0000
+</code></pre>
+
+<h2>Cumulative distribution function (CDF) - numerical solution</h2>
+
+<p>For most practical purposes, numerical solutions of one- or two- dimensional problems seem to be as good as the analytical solutions, the only disadvantage is the computational demands. Here I used the R&#39;s native function <code>integrate()</code> to calculate the exponential CDF numerically:</p>
+
+<pre><code class="r">  my.pexp.numerical &lt;- function(x, lambda)
+  {
+    # this my.int function allows my CDF to run over vectors
+    my.int &lt;- function(x, lambda) integrate(my.dexp, lambda=lambda, lower=0, upper=x)$value
+    # apply the my.int to each element of x
+    sapply(x, FUN=my.int, lambda)
+  }
+  my.pexp.numerical(x=0:5, lambda=2)
+</code></pre>
+
+<pre><code>## [1] 0.0000 0.8647 0.9817 0.9975 0.9997 1.0000
+</code></pre>
+
+<p>And let&#39;s plot the numerical solution over the analytical one:</p>
+
+<pre><code class="r">  curve(my.pexp.anal(x, lambda=2), from=0, to=2, 
+        col=&quot;green&quot;, main=&quot;exponential CDF&quot;)
+  curve(my.pexp.numerical(x, lambda=2), from=0, to=2, 
+        lty=2, col=&quot;red&quot;, add=TRUE)
+  legend(&quot;bottomright&quot;, lty=c(1,2), 
+         legend=c(&quot;Analytical&quot;, &quot;Numerical&quot;),        
+         col=c(&quot;green&quot;, &quot;red&quot;), lwd=2)
+</code></pre>
+
+<p><img src=""/> </p>
+
+<p>Practically identical.</p>
+
+<h2>Quantile function (QF) - analytical solution</h2>
+
+<p>Quantile functions are useful for two things: (1) assessing statistical significance, and (2) generating random numbers (see below). Quantile function (\( P^- \)) is the inverse of the cumulative distribution function. It means that you have to find a value of \( x \) for a given \( P(x) \), which is an inverse action to what we usually do with functions. Finding an analytical solution may be quite tricky, and again, if you don&#39;t have a mathematician at your service, <a href="http://www.sagemath.org/">Sage</a> can help.</p>
+
+<p>In case of our exponential distribution, the quantile function is:</p>
+
+<p>\[ P^{-}(q) = \frac{-\ln(1-q)}{\lambda}, \qquad q \in [0,1) \]</p>
+
+<p>In R:</p>
+
+<pre><code class="r">  my.qexp.anal &lt;- function(q, lambda) (-log(1-q))/lambda 
+  my.qexp.anal(0.9, 2)
+</code></pre>
+
+<pre><code>## [1] 1.151
+</code></pre>
+
+<h2>Quantile function (QF) - numerical solution</h2>
+
+<p>The inverse may be hard to get for many CDFs, and hence one may need to go for a numerical solution. I found that the easiest way to solve for inverse of univariate CDFs in R is the <code>uniroot()</code> function. Alternatives are <code>optimize()</code> or <code>optim()</code>, but they can be unstable. In contrast, <code>uniroot()</code> is simple, quick, and stable.</p>
+
+<p>Here is my numerical solution for the expoentnial QF:</p>
+
+<pre><code class="r">  my.qexp.numerical &lt;- function(q, lambda)
+  { 
+    # function to be solved for 0
+    f &lt;- function(P, fixed)
+    {
+      lambda &lt;- fixed$lambda
+      q &lt;- fixed$q
+      # this is the criterion to be minimized by uniroot():
+      criterion &lt;- q - my.pexp.numerical(P, lambda)
+      return(criterion)
+    }
+
+    # for each element of vector P (the quantiles)
+    P &lt;- numeric(length(q))
+    for(i in 1:length(q))
+    {
+      # parameters that stay fixed
+      fixed &lt;- list(lambda=lambda, q=q[i])
+      # solving the f for 0 numerically by uniroot():
+      root.p &lt;- uniroot(f, 
+                        lower=0, 
+                        upper=100, # may require adjustment
+                        fixed=fixed)
+      P[i] &lt;-root.p$root
+    }
+    return(P)
+  }
+
+my.qexp.numerical(0.9, 2)
+</code></pre>
+
+<pre><code>## [1] 1.151
+</code></pre>
+
+<p>Let&#39;s plot the numerical solution over the analytical one:</p>
+
+<pre><code class="r">  q &lt;- seq(0.01, 0.9, by=0.01)
+  plot(q, my.qexp.anal(q, lambda=2), type=&quot;l&quot;, col=&quot;green&quot;, lwd=2)
+  lines(q, my.qexp.numerical(q, lambda=2), col=&quot;red&quot;, lty=2)
+  legend(&quot;bottomright&quot;, lty=c(1,2), 
+         legend=c(&quot;Analytical&quot;, &quot;Numerical&quot;),        
+         col=c(&quot;green&quot;, &quot;red&quot;), lwd=2)
+</code></pre>
+
+<p><img src=""/> </p>
+
+<h2>Random number generator - the inverse transform sampling</h2>
+
+<p>Have you ever wondered how R generates random draws from its distributions? How does it convert uniformly distributed pseudo-random numbers to, e.g., normally distributed numbers? For some time I naively thought that there are some giant built-in tables that R uses. Then I found that it&#39;s really simple. </p>
+
+<p>The easiest way is the <strong>inverse transform sampling</strong>. It works like this: you <em>generate a random number from \( Uniform(0,1) \) and plug it into your quantile function</em> (see above). That&#39;s it, and that&#39;s also why quantile functions can be really useful. Here is how you do it in R with the exponential distribution:</p>
+
+<pre><code class="r">  my.rexp.inverse &lt;- function(N, lambda)
+  {
+    U &lt;- runif(N, min=0, max=1)
+    rnd.draws &lt;- my.qexp.anal(U, lambda)
+    return(rnd.draws)
+  }
+  my.rexp.inverse(10, 2)
+</code></pre>
+
+<pre><code>##  [1] 0.10087 0.56874 0.79258 0.01962 1.28166 0.39451 2.17646 0.48650
+##  [9] 0.97453 0.33054
+</code></pre>
+
+<p>Here is a histogram of 10,000 random numbers generated by the inverse transform sampling. The solid smooth line is the exponential PDF from which the random numbers were drawn:</p>
+
+<pre><code class="r">  hist(my.rexp.inverse(10000,2), freq=FALSE, breaks=20,
+       xlab=&quot;x&quot;, main=NULL, col=&quot;grey&quot;)
+  #hist(rexp(10000, rate=2), freq=FALSE, breaks=20)
+  curve(dexp(x, rate=2), add=TRUE)
+</code></pre>
+
+<p><img src=""> </p>
+
+<h2>Random number generator - rejection sampling</h2>
+
+<p>The advantage of rejection sampling is that you don&#39;t need the quantile function.
+Notable texts on rejection sampling are provided by <a href="http://www.stat.yale.edu/%7Ejay/662/Week12/662-12.pdf">Jay Emerson</a>, on <a href="http://blog.quantitations.com/tutorial/2012/11/27/rejection-sampling/">Quantitations blog</a> and on <a href="http://playingwithr.blogspot.com/2011/06/rejection-sampling.html">tsperry&#39;s blog</a>. I will try to provide my own description and notation, which will hopefully complement the other posts.</p>
+
+<p>In short, wou will need: (1) the so-called <strong><em>proposal probability densidy function</em></strong> which I will call \( f(x) \), (2) the PDF from which you want to sample, here called \( p(x) \), and (3) a constant \( m \) which will satisfy \( f(x) \times m > p(x) \). In other words, the curve \( f(x) \times m \) must lay entirely above the \( p(x) \) curve, and ideally as close to \( p(x) \) as possible (you will waste less samples). The \( f(x) \) can be any PDF from which you are able to sample.</p>
+
+<p>For my exponential example I will use simple uniform proposal density \( f(x) \). The following figure illustrates my exponential \( p(x) \), my proposal \( f(x) \), and \( f(x) \times m \):</p>
+
+<pre><code class="r">  x &lt;- seq(0, 5, by=0.01)
+  # my exponential PDF:
+  p &lt;- dexp(x, rate=2)
+  # my PROPOSAL distribution:
+  f &lt;- dunif(x, min=0, max=5) # my proposal is uniform and hence
+                              # I need to choose an arbitrary upper bound 5
+  # the CONSTANT m
+  m &lt;- 11
+  fm &lt;- f*m
+
+  plot(c(0,5), c(0,2.5), type=&quot;n&quot;, xlab=&quot;x&quot;, ylab=&quot;density&quot;)
+  lines(x, fm, type=&quot;l&quot;, col=&quot;red&quot;)
+  lines(x, f, col=&quot;red&quot;, lty=2)
+  lines(x, p)
+
+  legend(&quot;right&quot;, lty=c(1,2,1), 
+         legend=c(&quot;f(x)*m&quot;, &quot;f(x)&quot;, &quot;p(x)&quot;), 
+         col=c(&quot;red&quot;, &quot;red&quot;, &quot;black&quot;), lwd=2)
+</code></pre>
+
+<p><img src=""> </p>
+
+<p>My uniform propsal distribution is not optimal &ndash; it will lead to high rejection rate and will require a lot of unnecessary computations. The uniform proposal will also truncate my samples at the max value of the uniform distribution. However, the uniform will still be ok for the illustration purposes here. </p>
+
+<p>In rejection sampling the algorithm of one sampling step is:</p>
+
+<ul>
+<li>1. Sample a point \( r_x \) from \( f(x) \).</li>
+<li>2. Draw a vertical line from \( r_x \) all the way up to \( m \times f(x) \).</li>
+<li>3. Sample a point \( r_v \) from a uniform density along the vertical line.</li>
+<li>4. If \( r_v \leq p(x) \) accept the sample, otherwise go to 1.</li>
+</ul>
+
+<p>This step is repeated until the desired number of accepted samples is reached. </p>
+
+<p>Here is my rejection sampler for the exponential PDF:</p>
+
+<pre><code class="r">  my.rexp.reject &lt;- function(N, lambda, max)
+  {
+    samples &lt;- numeric(N)
+    m &lt;- 12
+    fxm &lt;- dunif(0, 0, max)*m
+    for (i in 1:N) 
+    {
+      repeat
+      {
+      # 1. sample from the propsal distribution:
+        rx &lt;- runif(1, 0, max)
+      # 2. sample a point along a vertical line 
+      #    at the rx point from Uniform(0, f(x)*m):
+        rv &lt;- runif(1, 0, fxm)
+      # 3. evaluate the density of p(x) at rx
+        dx &lt;- dexp(rx, lambda)
+      # 4. compare and accept if appropriate
+        if (rv &lt;= dx) 
+        {
+          samples[i] &lt;- rx
+          break        
+        }
+      }
+    }
+    return(samples)
+  }
+</code></pre>
+
+<p>This is how 10,000 samples look like, together with the original PDF superimposed:</p>
+
+<pre><code class="r">  x &lt;- my.rexp.reject(N=10000, lambda=2, max=4)
+  hist(x, freq=FALSE, breaks=30, col=&quot;gray&quot;, main=NULL)
+  curve(dexp(x, 2), add=T)
+</code></pre>
+
+<p><img src=""> </p>
+
+</body>
+
+</html>
+
