@@ -1,7 +1,7 @@
 ---
 title: "Probability Density, Likelihood, and the Normal model"
 author: "Petr Keil"
-date: "March 2017"
+date: "June 2021"
 output:
   html_document:
     highlight: pygments
@@ -270,6 +270,6 @@ There are other functions derived from probability density function (PDF) `dnorm
 
 Type `?pnorm`, `?qnorm` or `?rnorm` and check it out.
 
-I have [a tutorial post](http://www.petrkeil.com/?p=2084) on that.
+I have [a tutorial post](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/Distribution%20gymnastics/distribution.html) on that.
 
 
