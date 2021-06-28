@@ -1,0 +1,164 @@
+---
+title: "Univariate Poisson Model"
+author: "Petr Keil"
+date: "June 2021"
+output:
+  html_document:
+    highlight: pygments
+    number_sections: yes
+    theme: cerulean
+  pdf_document: default
+---
+
+This brief lesson introduces the concept of **discrete distribution** 
+(**probability mass function**) on the example of Poisson distribution. We will
+also do more likelihood stuff.
+
+***
+
+Optional functions for interactive plotting for those with R-studio:
+
+```{r}
+library(manipulate)
+
+source("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2017_iDiv/master/Univariate%20Poisson%20Model/plotting_poisson.r")
+
+```
+
+# Poisson distribution
+
+Poisson distribution is a simple model for discrete and **positive count data**.
+
+$$p\left( x \right) = \frac{{e^{ - \lambda } \lambda ^x }}{{x!}}$$
+
+Where $\lambda$ is the only parameter, which is also the mean of the distribution. 
+
+# Simulating poisson data
+
+Let's explore the Poisson model a bit and simulate some data using ```rpois()```:
+```{r}
+rpois(n=100, lambda=1)
+```
+Now try different values of $\lambda$.
+
+
+We can plot the "empirical frequency histogram" for simulated data with 3 different values of parameter $\lambda$:
+```{r, tidy=FALSE}
+  plot(c(0,35), c(0,1), type="n",
+       xlab="x", ylab="Frequency")
+  
+  hist(rpois(n=100, lambda=1), add=T, freq=FALSE, col="blue")
+  hist(rpois(n=100, lambda=5), add=T, freq=FALSE, col="red")
+  hist(rpois(n=100, lambda=20), add=T, freq=FALSE, col="green")
+```
+
+Let's plot the respective **probability mass functions**:
+```{r, tidy=FALSE}
+  plot(0:35, dpois(0:35, lambda=1), 
+       col="blue", pch=19, 
+       ylab="Probability mass",
+       xlab="x")
+  points(0:35, dpois(0:35, lambda=5), col="red", pch=19)
+  points(0:35, dpois(0:35, lambda=20), col="green", pch=19)
+```
+
+Interactive version
+
+```{r, eval=FALSE}
+manipulate(move.poisson(lambda),
+           lambda=slider(1,100, step=0.01))
+```
+
+
+# Poisson likelihood
+
+I will generate the artificial data again:
+```{r}
+x <- rpois(n=100, lambda=8)
+x
+```
+
+Poisson distribution is didactically convenient as it only has the one parameter $\lambda$. We can write the *negative log-likelihood* function for a given dataset $x$:
+```{r, tidy=FALSE}
+  negLL.function <- function(x, lambda)
+  {
+    LL <- dpois(x, lambda, log=TRUE) # the log likelihood
+    negLL <- -sum(LL)
+    return(negLL)
+  }
+```
+
+We can try different values of $\lambda$:
+```{r}
+  negLL.function(x, lambda=10)
+```
+
+And we can evaluate the ```negLL.function``` for values of $\lambda$ between 0 and 35:
+```{r, tidy=FALSE}
+  lambdas <- seq(0, 30, by=0.1)
+  negLL.vector <- numeric(0) # empty numeric vector
+  
+  for(i in 1:length(lambdas))
+  {
+    negLL.vector[i] <- negLL.function(x, lambdas[i])  
+  }
+```
+
+Let's check what we have:
+```{r}
+  negLL.vector
+```
+
+Our **maximum likelihood exstimate (MLE) of $\lambda$** is:
+```{r}
+MLE <- lambdas[which.min(negLL.vector)] 
+MLE
+```
+
+And this is the plot of the negative log-likelihood function, together with the 
+MLE (vertical line):
+```{r}
+plot(lambdas, negLL.vector, ylab="Negative Log Likelihood")
+abline(v=MLE)
+```
+
+***
+
+Interactive visualization:
+
+```{r, eval=FALSE}
+manipulate(plot.poisson.ll(x, lambda),
+           lambda = slider(1, 20, step = 0.01))
+```
+
+************
+
+# Link between log likelihood and deviance
+
+Lunn et al. (2013, p. 138) define **deviance** as:
+
+$$D = -2 \log p(y|\theta)$$
+which is two times the negative likelihood!
+
+# Link between log likelihood and AIC
+
+Simply:
+
+$$AIC = D + 2k$$
+
+where $k$ is number of parameters. So for our best estimate ($\lambda = 8$), AIC will be:
+
+```{r}
+  AIC = 2*negLL.function(x, lambda=MLE) + 2*1
+  AIC
+```
+
+We can compare this with the output of `glm` function:
+
+```{r}
+ glm(x~1, family="poisson")
+```
+
+Note, the deviance here is different from our definition, since GLM seems to report **saturated**
+version of deviance (Lunn et al. 2013, p. 144)
+

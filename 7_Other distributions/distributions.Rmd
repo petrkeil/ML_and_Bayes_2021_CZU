@@ -1,0 +1,82 @@
+---
+title: "Other useful basic distributions"
+author: "Petr Keil"
+date: "June 2021"
+output: 
+  html_document: 
+    highlight: tango
+    number_sections: yes
+    theme: cerulean
+---
+
+**Resources:**
+
+- Wikipedia is your best friend. 
+- Great intro available as a [chapter by Ben Bolker](http://ms.mcmaster.ca/~bolker/emdbook/chap4A.pdf).
+- [JAGS manual](http://people.math.aau.dk/~kkb/Undervisning/Bayes14/sorenh/docs/jags_user_manual.pdf).
+
+Be aware of **conjugate priors**.
+
+The most important ones: **Normal, Poisson, Binomial (Bernoulli), Uniform**
+
+# Univariate
+
+## Exponential - `dexp(lambda)`
+
+- Survival analysis, point processes, distance decay, ...
+
+## Gamma - `dgamma(r, lambda)`
+
+- Alternative **prior for precision** (tau) in normal distribution.
+- Flexible distribution for modelling **continuous positive variables**.
+
+## Negative binomial - `dnegbin(p, r)`
+
+- Flexible **alternative to Poisson** when overdispersion is a problem.
+
+## Beta - `dbeta(a,b)`
+
+- Prior for parameter $P$ in binomial.
+- Modelling density on closed interval.
+
+## Double exponential - `ddexp(mu, tau)`
+
+- Useful for **Lasso penalization**.
+
+## Weibull - `dweib(v, lambda)`
+
+- Survival analysis.
+
+## Categorical - `dcat(pi)`
+
+- Beware, `dcat` is not in the basic R functions!
+- You can use `sample` instead.
+
+# Multivariate
+
+## Multivariate normal (MVN) - `dmnorm(mu, Omega)`
+
+- Theoretical underpinning of Pearson correlation, PCA, Generalized Least Squares (GLS) regression, Kriging.
+- When you stumble accross the term *covariance matrix*, you should expect MVN.
+- Useful for generating correlated variables.
+- In R it is not in the basic packages, you need package `mvtnorm`:
+
+```{r}
+  library(mvtnorm)
+  vector.of.means <- c(0,0)
+  cov.matrix <- matrix(c(1,0.8,0.8,1), 2,2) 
+  cov.matrix
+  y <- rmvnorm(n=30, mean=vector.of.means, sigma=cov.matrix)
+  y
+  plot(y)
+```
+
+## Wishart - `dwish(R, k)`
+
+Precision priors for Multivariate normal.
+
+## Multinomial - `dmulti(pi, n)`
+
+# Truncated and censored distributions
+
+Handled by `I(,)` in JAGS. See the [JAGS manual](http://people.math.aau.dk/~kkb/Undervisning/Bayes14/sorenh/docs/jags_user_manual.pdf).

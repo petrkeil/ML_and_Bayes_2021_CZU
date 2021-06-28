@@ -1,0 +1,26 @@
+
+    model
+    {
+    # priors
+      alpha.occ ~ dnorm(0, 0.01)
+      beta.occ ~ dnorm(0, 0.01)
+      alpha.det ~ dnorm(0, 0.01)
+      beta.det ~ dnorm(0, 0.01)
+      
+    # likelihood 
+      for(i in 1:N.sites)
+      {
+        z[i] ~ dbern(psi[i]) # TRUE OCCUPANCY at site i
+        logit(psi[i]) <- alpha.occ + beta.occ*humidity[i] 
+        logit(p[i]) <- alpha.det + beta.det*humidity[i] # DETECTION PROBABILITY
+
+        eff.p[i] <- z[i] * p[i] # p of observing the present individual
+        
+        for(j in 1:N.visit)
+        {           
+           # the ACTUAL DATA -- detection/non-detection at [i,j]
+           y[i,j] ~ dbern(eff.p[i]) 
+        }  
+      }
+    }
+  
