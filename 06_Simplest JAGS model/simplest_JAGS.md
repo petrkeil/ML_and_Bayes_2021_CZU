@@ -169,14 +169,14 @@ Inference for Bugs model at "my_model.txt", fit using jags,
  3 chains, each with 2000 iterations (first 1000 discarded)
  n.sims = 3000 iterations saved
          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff
-lambda    30.815   1.350  28.232  29.889  30.767  31.765  33.535 1.001  3000
-deviance 165.821   1.311 164.876 164.971 165.324 166.113 169.721 1.001  2100
+lambda    30.831   1.401  28.168  29.877  30.808  31.755  33.655 1.001  3000
+deviance 165.894   1.418 164.877 164.975 165.341 166.266 169.802 1.007  1100
 
 For each parameter, n.eff is a crude measure of effective sample size,
 and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 
 DIC info (using the rule, pD = var(deviance)/2)
-pD = 0.9 and DIC = 166.7
+pD = 1.0 and DIC = 166.9
 DIC is an estimate of expected predictive error (lower deviance is better).
 ```
 
