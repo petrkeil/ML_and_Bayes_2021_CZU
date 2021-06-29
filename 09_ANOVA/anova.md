@@ -1,6 +1,16 @@
-# ANOVA -- **part 1**: The data and fixed-effects model definition
-Petr Keil  
-March 2017  
+---
+title: "ANOVA -- **part 1**: The data and fixed-effects model definition"
+author: "Petr Keil"
+date: "June 2021"
+output:
+  html_document:
+    highlight: pygments
+    keep_md: yes
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+  pdf_document: default
+---
 
 ***
 
@@ -23,19 +33,19 @@ Loading the data from the web:
 
 
 ```r
-  snakes <- read.csv("http://www.petrkeil.com/wp-content/uploads/2017/02/snakes_lengths.csv")
+  snakes <- read.csv("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2021_CZU/main/09_ANOVA/snakes.csv")
 
   summary(snakes)
 ```
 
 ```
-##    population      snout.vent   
-##  Min.   :1.000   Min.   :36.56  
-##  1st Qu.:2.000   1st Qu.:43.02  
-##  Median :3.000   Median :49.76  
-##  Mean   :3.439   Mean   :50.35  
-##  3rd Qu.:4.000   3rd Qu.:57.60  
-##  Max.   :5.000   Max.   :61.37
+##    population   snout.vent   
+##  Min.   :1    Min.   :33.19  
+##  1st Qu.:2    1st Qu.:45.11  
+##  Median :3    Median :48.56  
+##  Mean   :3    Mean   :50.45  
+##  3rd Qu.:4    3rd Qu.:58.09  
+##  Max.   :5    Max.   :65.49
 ```
 
 Plotting the data:

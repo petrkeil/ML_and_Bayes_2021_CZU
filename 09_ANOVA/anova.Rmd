@@ -32,7 +32,7 @@ We will use modified data from the example from **Marc Kery's Introduction to Wi
 Loading the data from the web:
 
 ```{r, tidy=FALSE}
-  snakes <- read.csv("http://www.petrkeil.com/wp-content/uploads/2017/02/snakes_lengths.csv")
+  snakes <- read.csv("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2021_CZU/main/09_ANOVA/snakes.csv")
 
   summary(snakes)
 ```

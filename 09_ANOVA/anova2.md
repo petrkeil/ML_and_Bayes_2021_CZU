@@ -1,6 +1,16 @@
-# ANOVA -- **part 2**: Fixed and random effects in JAGS
-Petr Keil  
-March 2017  
+---
+title: "ANOVA -- **part 2**: Fixed and random effects in JAGS"
+author: "Petr Keil"
+date: "June 2021"
+output:
+  html_document:
+    highlight: pygments
+    keep_md: yes
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+  pdf_document: default
+---
 
 ***
 
@@ -23,19 +33,19 @@ Loading the data from the web:
 
 
 ```r
-  snakes <- read.csv("http://www.petrkeil.com/wp-content/uploads/2017/02/snakes_lengths.csv")
+  snakes <- read.csv("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2021_CZU/main/09_ANOVA/snakes.csv")
 
   summary(snakes)
 ```
 
 ```
-##    population      snout.vent   
-##  Min.   :1.000   Min.   :36.56  
-##  1st Qu.:2.000   1st Qu.:43.02  
-##  Median :3.000   Median :49.76  
-##  Mean   :3.439   Mean   :50.35  
-##  3rd Qu.:4.000   3rd Qu.:57.60  
-##  Max.   :5.000   Max.   :61.37
+##    population   snout.vent   
+##  Min.   :1    Min.   :33.19  
+##  1st Qu.:2    1st Qu.:45.11  
+##  Median :3    Median :48.56  
+##  Mean   :3    Mean   :50.45  
+##  3rd Qu.:4    3rd Qu.:58.09  
+##  Max.   :5    Max.   :65.49
 ```
 
 Plotting the data:
@@ -129,9 +139,9 @@ model.fit.fix <- jags(data=snake.data,
 ##    Resolving undeclared variables
 ##    Allocating nodes
 ## Graph information:
-##    Observed stochastic nodes: 41
+##    Observed stochastic nodes: 50
 ##    Unobserved stochastic nodes: 6
-##    Total graph size: 107
+##    Total graph size: 115
 ## 
 ## Initializing model
 ```
@@ -145,12 +155,12 @@ model.fit.fix
 ##  3 chains, each with 2000 iterations (first 1000 discarded)
 ##  n.sims = 3000 iterations saved
 ##          mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
-## alpha[1]  56.515   3.272 49.989 54.314 56.546 58.697 62.820 1.001  3000
-## alpha[2]  41.218   1.039 39.150 40.549 41.223 41.907 43.271 1.001  3000
-## alpha[3]  45.865   1.035 43.808 45.174 45.882 46.561 47.947 1.001  2500
-## alpha[4]  54.416   1.049 52.263 53.743 54.416 55.140 56.446 1.001  3000
-## alpha[5]  58.956   1.041 56.940 58.273 58.957 59.651 61.003 1.001  3000
-## delta12   15.297   3.429  8.538 13.094 15.343 17.543 21.964 1.001  3000
+## alpha[1]  49.420   0.966 47.507 48.768 49.428 50.059 51.311 1.001  3000
+## alpha[2]  39.238   0.971 37.326 38.594 39.221 39.898 41.098 1.001  3000
+## alpha[3]  46.260   0.969 44.324 45.610 46.266 46.911 48.174 1.001  3000
+## alpha[4]  55.651   0.978 53.695 55.000 55.646 56.321 57.540 1.001  3000
+## alpha[5]  61.389   0.953 59.497 60.765 61.392 62.011 63.251 1.001  3000
+## delta12   10.182   1.383  7.556  9.223 10.172 11.130 12.888 1.001  3000
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
@@ -161,7 +171,19 @@ Plotting parameter estimates with `mcmcplots`
 
 ```r
 library(mcmcplots)
+```
 
+```
+## Warning: package 'mcmcplots' was built under R version 4.0.5
+```
+
+```
+## Registered S3 method overwritten by 'mcmcplots':
+##   method        from  
+##   as.mcmc.rjags R2jags
+```
+
+```r
 caterplot(model.fit.fix, parms="alpha", horizontal=FALSE, reorder=FALSE)
 ```
 
@@ -248,9 +270,9 @@ model.fit.rnd <- jags(data=snake.data,
 ##    Resolving undeclared variables
 ##    Allocating nodes
 ## Graph information:
-##    Observed stochastic nodes: 41
+##    Observed stochastic nodes: 50
 ##    Unobserved stochastic nodes: 8
-##    Total graph size: 107
+##    Total graph size: 119
 ## 
 ## Initializing model
 ```
@@ -264,13 +286,13 @@ model.fit.rnd
 ##  3 chains, each with 2000 iterations (first 1000 discarded)
 ##  n.sims = 3000 iterations saved
 ##             mu.vect sd.vect   2.5%    25%    50%    75%  97.5%  Rhat n.eff
-## alpha[1]     56.400   3.079 50.306 54.328 56.338 58.493 62.358 1.001  3000
-## alpha[2]     41.431   1.030 39.429 40.717 41.430 42.123 43.450 1.001  2300
-## alpha[3]     45.973   1.012 44.018 45.286 45.983 46.632 47.965 1.001  3000
-## alpha[4]     54.418   1.031 52.340 53.731 54.422 55.118 56.331 1.001  3000
-## alpha[5]     58.939   1.018 56.909 58.267 58.956 59.633 60.862 1.001  3000
-## grand.sigma  12.184   8.254  4.842  7.489  9.947 13.896 34.483 1.014   730
-## group.sigma   3.215   0.393  2.556  2.928  3.182  3.463  4.061 1.002  1900
+## alpha[1]     49.485   0.963 47.588 48.834 49.487 50.136 51.378 1.001  3000
+## alpha[2]     39.372   0.952 37.551 38.729 39.370 40.023 41.247 1.002  1100
+## alpha[3]     46.352   0.989 44.396 45.705 46.363 47.021 48.223 1.001  2300
+## alpha[4]     55.628   0.981 53.656 55.004 55.645 56.264 57.570 1.001  3000
+## alpha[5]     61.334   0.982 59.368 60.708 61.347 62.001 63.242 1.001  3000
+## grand.sigma  13.827  10.303  5.383  8.295 11.010 15.530 41.403 1.013   250
+## group.sigma   3.050   0.341  2.476  2.820  3.018  3.241  3.809 1.001  2400
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).

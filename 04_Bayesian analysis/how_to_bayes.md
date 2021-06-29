@@ -1,10 +1,11 @@
+
 The Bayesian way
 ========================================================
+
 Petr Keil
 
 June 2021
 
-![](Thomas_Bayes.png)
 
 Are we interested in the data, or the model, or the parameters?
 ========================================================
@@ -64,16 +65,10 @@ Sampling from the posterior
 ========================================================
 
 We can use the ratio $\frac{p(\theta_1|y) }{ p(\theta_2|y)}$ to sample from the posterior distribution by a numerical sampling algorithm called Markov Chain Monte Carlo (**MCMC**).
-- **Metropolis-Hastings algorithm** -- See
-[YouTube video](https://www.youtube.com/watch?v=IAAZwh6PSNM), time 1:00 onwards.
+- **Metropolis-Hastings algorithm** -- Seeh
+[YouTube video](https://www.youtube.com/watch?v=OTO1DygELpY&list=RDQMWKs1u7BRg1w&start_radio=1).
 - **Gibbs algorithm**
 
-
-Sampling from the posterior
-========================================================
-
-An example of Metropolis-Hastings MCMC estimation of mean ($\mu$) and standard deviation ($\sigma$) of a Normal distribution (by M. Joseph; [R code here](http://mbjoseph.github.io/blog/2013/09/08/metropolis/))
-![mcmc illustration](http://mbjoseph.github.io/images/metrop.gif) 
 
 Sampling from the posterior
 ========================================================
