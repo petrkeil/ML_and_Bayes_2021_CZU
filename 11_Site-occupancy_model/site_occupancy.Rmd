@@ -21,11 +21,11 @@ output:
  beta.occ <- 3
  occ.prob <- exp(alpha.occ + beta.occ*humidity)/(1+exp(alpha.occ + beta.occ*humidity))
  
- par(mfrow=c(1,2))
- plot(humidity, occ.prob)
+ #par(mfrow=c(1,2))
+ #plot(humidity, occ.prob)
 
  true.presence <- rbinom(n=n.site, size=1, prob=occ.prob)
- points(humidity, true.presence, pch=19, col="red")
+ #points(humidity, true.presence, pch=19, col="red")
 
 ## the detection probability
  alpha.p <- 0

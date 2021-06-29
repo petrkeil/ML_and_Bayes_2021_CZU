@@ -12,7 +12,7 @@ output:
   pdf_document: default
 ---
 
-![](site_occupancy_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+
 
 ***
 
@@ -47,12 +47,12 @@ head(gentiana)
 
 ```
 ##   humidity visit1 visit2 visit3 pres.abs
-## 1    -0.98      0      0      0        0
+## 1    -0.99      0      0      0        0
 ## 2    -0.97      0      0      0        0
-## 3    -0.97      0      0      0        0
-## 4    -0.97      0      0      0        0
-## 5    -0.96      0      0      0        0
-## 6    -0.92      0      0      0        0
+## 3    -0.93      0      0      0        0
+## 4    -0.92      0      0      0        0
+## 5    -0.89      0      0      0        0
+## 6    -0.87      0      0      0        0
 ```
 
 ```r
@@ -206,7 +206,7 @@ probability of presence):
 ## Graph information:
 ##    Observed stochastic nodes: 450
 ##    Unobserved stochastic nodes: 154
-##    Total graph size: 1538
+##    Total graph size: 1532
 ## 
 ## Initializing model
 ```
@@ -247,7 +247,7 @@ Now we can run the model:
 ## Graph information:
 ##    Observed stochastic nodes: 450
 ##    Unobserved stochastic nodes: 154
-##    Total graph size: 1538
+##    Total graph size: 1532
 ## 
 ## Initializing model
 ```
