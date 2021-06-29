@@ -96,6 +96,12 @@ Books
 ========================================================
 ![](resources_presentation-figure/kruschke.png)
 
+
+Books
+========================================================
+![](resources_presentation-figure/mcelreath.png)
+
+
 Books
 ========================================================
 ![](resources_presentation-figure/gelman1.png)

@@ -21,17 +21,21 @@ License: *CC-BY-SA*
 
 6. [Other distributions](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/07_Other%20distributions/distributions.html)
 
-7. [t-test]()
+7. [t-test](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/08_T-test/t-test.html)
 
-8. [ANOVA and mixed-effect models]()
+8a. [ANOVA and mixed-effect models - part 1](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/09_ANOVA/anova.html)
 
-6. [Linear regression]()
+8b. [ANOVA and mixed-effect models - part 2](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/09_ANOVA/anova2.html)
 
-7. [Site-occupancy model]()
+6a. [Linear regression - part 1](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/10_Linear%20Regression/linear_regression_part1_ML.html)
 
-8. [Resources]()
+6b. [Linear regression - part 2](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/10_Linear%20Regression/linear_regression_part2_JAGS.html)
 
-9. [Conclusions]()
+7. [Site-occupancy model](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/11_Site-occupancy_model/site_occupancy.html)
+
+8. [Resources](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/12_Resources/resources_presentation.html)
+
+9. [Conclusions](https://htmlpreview.github.io/?https://github.com/petrkeil/ML_and_Bayes_2021_CZU/blob/main/13_Concluding%20presentation/conclusions.html)
 
 
 

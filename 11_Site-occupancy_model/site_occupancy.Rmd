@@ -1,7 +1,7 @@
 ---
 title: "Site occupancy model with imperfect detectability"
 author: "Petr Keil (based on Marc Kéry's chapter)"
-date: "March 2017"
+date: "June 2021"
 output:
   html_document:
     highlight: pygments
@@ -13,39 +13,42 @@ output:
 ---
 
 ```{r, echo=FALSE}
-# n.site=150
-# humidity=round(sort(runif(n=n.site, -1, 1)),2)
+ n.site=150
+ humidity=round(sort(runif(n=n.site, -1, 1)),2)
  
 # the occurence model
-# alpha.occ <- 0
-# beta.occ <- 3
-# occ.prob <- exp(alpha.occ + beta.occ*humidity)/(1+exp(alpha.occ + beta.occ*humidity))
+ alpha.occ <- 0
+ beta.occ <- 3
+ occ.prob <- exp(alpha.occ + beta.occ*humidity)/(1+exp(alpha.occ + beta.occ*humidity))
  
-# par(mfrow=c(1,2))
- #plot(humidity, occ.prob)
+ par(mfrow=c(1,2))
+ plot(humidity, occ.prob)
 
-# true.presence <- rbinom(n=n.site, size=1, prob=occ.prob)
- #points(humidity, true.presence, pch=19, col="red")
+ true.presence <- rbinom(n=n.site, size=1, prob=occ.prob)
+ points(humidity, true.presence, pch=19, col="red")
 
 # the detection probability
-## alpha.p <- 0
-# beta.p <- -5
-# det.prob <- exp(alpha.p + beta.p*humidity)/(1+exp(alpha.p + beta.p*humidity))
- #plot(humidity, det.prob)
+ alpha.p <- 0
+ beta.p <- -5
+ det.prob <- exp(alpha.p + beta.p*humidity)/(1+exp(alpha.p + beta.p*humidity))
+ plot(humidity, det.prob)
 
-# eff.det.prob <- true.presence * det.prob
+ eff.det.prob <- true.presence * det.prob
 
 # the observation
-# N.sites <- n.site
-# N.visit <- 3
-# y <- data.frame(matrix(nrow=N.sites, ncol=N.visit))
-#      names(y) <- c("visit1", "visit2", "visit3")
-# for(i in 1:N.visit)
-#   {
-#      y[,i] <- rbinom(n=n.site, size=1, prob=eff.det.prob)
-#   }
+ N.sites <- n.site
+ N.visit <- 3
+ y <- data.frame(matrix(nrow=N.sites, ncol=N.visit))
+      names(y) <- c("visit1", "visit2", "visit3")
+ for(i in 1:N.visit)
+   {
+      y[,i] <- rbinom(n=n.site, size=1, prob=eff.det.prob)
+   }
 
-#  gentiana <- data.frame(humidity, y)
+  pres.abs <- apply(X=y, MARGIN = 1, FUN=max)
+  gentiana <- data.frame(humidity, y, pres.abs)
+
+  write.csv(gentiana, file = "gentiana.csv", row.names=FALSE)
 ```
 
 ***
@@ -90,7 +93,7 @@ This is the classical LOGISTIC REGRESSION for presence-absence data:
 
 Or the response can be number of successes out of 3 visits:
 ```{r}
-  succ.fail <- cbind(rowSums(gentiana[,2:4]), rowSums(gentiana[,2:4]))
+  succ.fail <- cbind(rowSums(gentiana[,2:4]), 3 - rowSums(gentiana[,2:4]))
   naive.m2 <- glm(succ.fail~humidity, data=gentiana, family="binomial")
 ```
 
