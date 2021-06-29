@@ -1,8 +1,18 @@
-# Site occupancy model with imperfect detectability
-Petr Keil (based on Marc Kéry's chapter)  
-March 2017  
+---
+title: "Site occupancy model with imperfect detectability"
+author: "Petr Keil (based on Marc Kéry's chapter)"
+date: "June 2021"
+output:
+  html_document:
+    highlight: pygments
+    keep_md: yes
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+  pdf_document: default
+---
 
-
+![](site_occupancy_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
 
 ***
 
@@ -26,8 +36,7 @@ The data describe detections of *Gentianella germanica* at 150 sites, each visit
 Loading the data from the web:
 
 ```r
-  gentiana <- read.csv("http://www.petrkeil.com/wp-content/uploads/2014/02/gentiana.csv")
-  gentiana <- gentiana[,-1]
+  gentiana <- read.csv("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2021_CZU/main/11_Site-occupancy_model/gentiana.csv")
 ```
 
 Explore the data a little bit:
@@ -38,12 +47,12 @@ head(gentiana)
 
 ```
 ##   humidity visit1 visit2 visit3 pres.abs
-## 1    -0.99      0      0      0        0
-## 2    -0.98      0      0      0        0
-## 3    -0.96      0      0      0        0
-## 4    -0.93      0      0      0        0
-## 5    -0.89      0      0      0        0
-## 6    -0.88      0      0      0        0
+## 1    -0.98      0      0      0        0
+## 2    -0.97      0      0      0        0
+## 3    -0.97      0      0      0        0
+## 4    -0.97      0      0      0        0
+## 5    -0.96      0      0      0        0
+## 6    -0.92      0      0      0        0
 ```
 
 ```r
@@ -67,7 +76,7 @@ This is the classical LOGISTIC REGRESSION for presence-absence data:
 Or the response can be number of successes out of 3 visits:
 
 ```r
-  succ.fail <- cbind(rowSums(gentiana[,2:4]), rowSums(gentiana[,2:4]))
+  succ.fail <- cbind(rowSums(gentiana[,2:4]), 3 - rowSums(gentiana[,2:4]))
   naive.m2 <- glm(succ.fail~humidity, data=gentiana, family="binomial")
 ```
 
@@ -197,7 +206,7 @@ probability of presence):
 ## Graph information:
 ##    Observed stochastic nodes: 450
 ##    Unobserved stochastic nodes: 154
-##    Total graph size: 1616
+##    Total graph size: 1538
 ## 
 ## Initializing model
 ```
@@ -238,7 +247,7 @@ Now we can run the model:
 ## Graph information:
 ##    Observed stochastic nodes: 450
 ##    Unobserved stochastic nodes: 154
-##    Total graph size: 1616
+##    Total graph size: 1538
 ## 
 ## Initializing model
 ```

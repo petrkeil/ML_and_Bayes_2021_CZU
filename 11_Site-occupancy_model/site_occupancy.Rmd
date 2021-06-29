@@ -16,7 +16,7 @@ output:
  n.site=150
  humidity=round(sort(runif(n=n.site, -1, 1)),2)
  
-# the occurence model
+## the occurence model
  alpha.occ <- 0
  beta.occ <- 3
  occ.prob <- exp(alpha.occ + beta.occ*humidity)/(1+exp(alpha.occ + beta.occ*humidity))
@@ -27,15 +27,15 @@ output:
  true.presence <- rbinom(n=n.site, size=1, prob=occ.prob)
  points(humidity, true.presence, pch=19, col="red")
 
-# the detection probability
+## the detection probability
  alpha.p <- 0
  beta.p <- -5
  det.prob <- exp(alpha.p + beta.p*humidity)/(1+exp(alpha.p + beta.p*humidity))
- plot(humidity, det.prob)
+# plot(humidity, det.prob)
 
  eff.det.prob <- true.presence * det.prob
 
-# the observation
+## the observation
  N.sites <- n.site
  N.visit <- 3
  y <- data.frame(matrix(nrow=N.sites, ncol=N.visit))
@@ -72,8 +72,7 @@ The data describe detections of *Gentianella germanica* at 150 sites, each visit
 
 Loading the data from the web:
 ```{r}
-  gentiana <- read.csv("http://www.petrkeil.com/wp-content/uploads/2014/02/gentiana.csv")
-  gentiana <- gentiana[,-1]
+  gentiana <- read.csv("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2021_CZU/main/11_Site-occupancy_model/gentiana.csv")
 ```
 
 Explore the data a little bit:
