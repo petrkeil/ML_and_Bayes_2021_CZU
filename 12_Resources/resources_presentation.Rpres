@@ -51,6 +51,26 @@ model formulas and STAN
 
 Software
 ========================================================
+
+```{r, message = FALSE, warning = FALSE}
+  catepil <- read.csv("https://cutt.ly/1mp5Dc0")
+  catepil
+```
+
+Software
+========================================================
+
+```{r, message = FALSE, warning = FALSE}
+# library(brms)
+
+# stan.model <- brm(growth ~ tannin, 
+#                   data = catepil, 
+#                   family = gaussian())
+```
+
+
+Software
+========================================================
 ![](software_and_R_packages.png)
 
 Software
