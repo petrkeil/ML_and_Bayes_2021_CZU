@@ -47,7 +47,7 @@ We will use the example from **Marc Kery's Introduction to WinBUGS for Ecologist
 Let's load the data:
 
 ```{r, tidy=FALSE, fig.width=4, fig.height=5, eval=FALSE}
-falcon <- read.csv("http://www.petrkeil.com/wp-content/uploads/2014/02/falcon.csv")
+falcon <- read.csv("https://raw.githubusercontent.com/petrkeil/ML_and_Bayes_2021_CZU/main/08_T-test/falcon.csv")
 ```
 
 And explore the data a bit:

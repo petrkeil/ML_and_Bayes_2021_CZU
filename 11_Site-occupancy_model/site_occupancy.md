@@ -48,11 +48,11 @@ head(gentiana)
 ```
 ##   humidity visit1 visit2 visit3 pres.abs
 ## 1    -0.99      0      0      0        0
-## 2    -0.97      0      0      0        0
-## 3    -0.93      0      0      0        0
-## 4    -0.92      0      0      0        0
-## 5    -0.89      0      0      0        0
-## 6    -0.87      0      0      0        0
+## 2    -0.99      0      0      0        0
+## 3    -0.98      0      0      0        0
+## 4    -0.98      1      1      1        1
+## 5    -0.97      0      0      0        0
+## 6    -0.94      0      0      0        0
 ```
 
 ```r
@@ -103,15 +103,15 @@ $z_i \sim Bernoulli(\psi_i)$
 
 $y_{ij} \sim Bernoulli(z_i \times p_{i})$
 
-Where $z_i$ is the unobserved but true occurrence, $\psi_i$ is probability of occurrence, $y_{ij}$ is the detection or non-detection (the actual data) at site $i$ during visit $j$, and $p_{ij}$ is the detection probability of the species.
+Where $z_i$ is the unobserved but true occurrence, $\psi_i$ is probability of occurrence, $y_{ij}$ is the detection or non-detection (the actual data) at site $i$ during visit $j$, and $p_{i}$ is the detection probability of the species.
 
 We also know that
 
-$p_{ij}=f(environment_{ij})$
+$p_{i}=f(humidity_{i})$
 
 and that
 
-$\psi_i=f(environment_i)$
+$\psi_i=f(humidity_i)$
 
 
 ## Fitting the model in JAGS
@@ -141,27 +141,33 @@ The model:
   cat("
     model
     {
-    # priors
+    # PRIORS ----------------------------------
+    
       alpha.occ ~ dnorm(0, 0.01)
       beta.occ ~ dnorm(0, 0.01)
       alpha.det ~ dnorm(0, 0.01)
       beta.det ~ dnorm(0, 0.01)
       
-    # likelihood 
-      for(i in 1:N.sites)
-      {
-        z[i] ~ dbern(psi[i]) # TRUE OCCUPANCY at site i
-        logit(psi[i]) <- alpha.occ + beta.occ*humidity[i] 
-        logit(p[i]) <- alpha.det + beta.det*humidity[i] # DETECTION PROBABILITY
+    # LIKELIHOOD ------------------------------
+    
+    for(i in 1:N.sites)
+    {
+      # TRUE OCCUPANCY at site i:
+      logit(psi[i]) <- alpha.occ + beta.occ*humidity[i] 
+      z[i] ~ dbern(psi[i]) 
+      
+      # DETECTION PROBABILITY:
+      logit(p[i]) <- alpha.det + beta.det*humidity[i] 
 
-        eff.p[i] <- z[i] * p[i] # p of observing the present individual
-        
-        for(j in 1:N.visit)
-        {           
-           # the ACTUAL DATA -- detection/non-detection at [i,j]
-           y[i,j] ~ dbern(eff.p[i]) 
-        }  
-      }
+      # effective probability of observing the present individual
+      eff.p[i] <- z[i] * p[i] 
+      
+      for(j in 1:N.visit)
+      {           
+         # the observed data -- detection/non-detection at [i,j]
+         y[i,j] ~ dbern(eff.p[i]) 
+      }  
+    }
     }
   ", file="gentiana.txt")
 ```
@@ -206,7 +212,7 @@ probability of presence):
 ## Graph information:
 ##    Observed stochastic nodes: 450
 ##    Unobserved stochastic nodes: 154
-##    Total graph size: 1532
+##    Total graph size: 1520
 ## 
 ## Initializing model
 ```
@@ -247,7 +253,7 @@ Now we can run the model:
 ## Graph information:
 ##    Observed stochastic nodes: 450
 ##    Unobserved stochastic nodes: 154
-##    Total graph size: 1532
+##    Total graph size: 1520
 ## 
 ## Initializing model
 ```

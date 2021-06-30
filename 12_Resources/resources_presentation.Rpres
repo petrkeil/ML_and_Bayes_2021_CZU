@@ -46,6 +46,8 @@ sometimes not.
 
 **R packages for STAN**
 - ```RStan```
+- ```brms``` - can fit Bayesian models using classical 'glm' 
+model formulas and STAN
 
 Software
 ========================================================
